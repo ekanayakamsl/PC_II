@@ -33,7 +33,6 @@ public class AI {
     public AI() {
         System.out.println("");
         map = new AiMap();
-
         printPositionVector(map.valueMap);
 
     }
@@ -47,14 +46,15 @@ public class AI {
         Lmark = 0;
 
         checkMove.checkObstaclesAndBoundary(player, map, lifePacks, coinPacks);
-        String nextMove = checkMove.findBestMove();
+        String nextMove;
         System.out.println(Umark + "  " + Rmark + "  " + Dmark + "  " + Lmark);
         if (checkMove.checkForShoot(map, player)) {
             nextMove = "SHOOT#";
+        } else {
+            nextMove = checkMove.findBestMove();
         }
         System.out.println(nextMove);
         return nextMove;
-
     }
 
     public void printPositionVector(int[][] posVector) {

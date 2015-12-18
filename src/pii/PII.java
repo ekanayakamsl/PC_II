@@ -5,6 +5,9 @@
  */
 package pii;
 
+import AI.CheckMove;
+import Actor.CoinPack;
+import Actor.Player;
 import messegeControlle.MapControl;
 
 /**
@@ -17,20 +20,14 @@ public class PII {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // TODO code application logic here
-        A a1 =new A();
-        a1.a = 10;
-        System.out.println(a1.a);
-        A a2 =new A();
-        System.out.println(a2.a);
+        
+    
+        CheckMove checkMove = new CheckMove();
+        CoinPack coinPack = new CoinPack(100,10,2,3);
+        Player player = new Player("p",1,100,3,5,10,5,5);
+        checkMove.CreateValueMap(coinPack, player);
 
+        //    }
     }
 
-}
-
-class A {
-    public static int a = 0; 
-    A(){
-        a  =0;
-    }
 }

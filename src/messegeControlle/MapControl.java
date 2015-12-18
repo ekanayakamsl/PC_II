@@ -69,7 +69,7 @@ public class MapControl {
 
 //            i for bricks
             Brick brick = new Brick(100, x, y);
-            map[y][x] = brick;
+            getMap()[y][x] = brick;
         }
 
 //        tokenize string for stones
@@ -83,7 +83,7 @@ public class MapControl {
 
 //            2 for stones
             Stone stone = new Stone(x, y);
-            map[y][x] = stone;
+            getMap()[y][x] = stone;
         }
 
 //        tokenize string for water
@@ -97,7 +97,7 @@ public class MapControl {
 
 //            3 for water
             Water water1 = new Water(x, y);
-            map[y][x] = water1;
+            getMap()[y][x] = water1;
         }
 
 //        printMap();
@@ -124,7 +124,7 @@ public class MapControl {
 
         players.add(player);
         clientId = players.size() - 1;
-        map[player.getY()][player.getX()] = player;
+        getMap()[player.getY()][player.getX()] = player;
     }
 
 //    private void initPlayerOnMap(Player player) {
@@ -160,7 +160,7 @@ public class MapControl {
                 setPlayerOnMap(player);
             } else {
                 Empty empty = new Empty(player.getX(), player.getY());
-                map[player.getY()][player.getX()] = empty;
+                getMap()[player.getY()][player.getX()] = empty;
             }
         }
 
@@ -176,12 +176,17 @@ public class MapControl {
 
                 Brick brick = new Brick(health, x, y);
 
-                map[y][x] = brick;
+                if (brick.getHealth() != 4) {
+                    getMap()[y][x] = brick;
+                } else {
+                    Empty empty = new Empty(brick.getX(), brick.getY());
+                    getMap()[y][x] = empty;
+                }
             }
         }
 
         System.out.println(" client name" + players.get(clientId).getName());
-        String msg = ai.processInputMessege(map, players.get(clientId), lifePacks, coinPacks);
+        String msg = ai.processInputMessege(getMap(), players.get(clientId), lifePacks, coinPacks);
         System.out.println("net meggage == " + msg);
         tankClient.run(msg);
     }
@@ -194,11 +199,11 @@ public class MapControl {
             players.add(player);
         } else if ((players.get(a).getY() != player.getY()) || (players.get(a).getX() != player.getX())) {
             Empty empty = new Empty(players.get(a).getX(), players.get(a).getY());
-            map[players.get(a).getY()][players.get(a).getX()] = empty;
+            getMap()[players.get(a).getY()][players.get(a).getX()] = empty;
             players.set(a, player);
             System.out.println("(players[a].getY() != player.getY()) || (players[a].getX() != player.getX()");
         }
-        map[player.getY()][player.getX()] = player;
+        getMap()[player.getY()][player.getX()] = player;
     }
 
     public void updateLifepack(String string) {
@@ -213,7 +218,7 @@ public class MapControl {
         int time = Integer.parseInt(details[1]);
 
         LifePack lifePack = new LifePack(time, x, y);
-        map[y][x] = lifePack;
+        getMap()[y][x] = lifePack;
         Thread t = null;
         lifePacks.add(lifePack);
         t = new Thread(new Runnable() {
@@ -225,7 +230,7 @@ public class MapControl {
                 }
                 lifePacks.remove(lifePack);
                 Empty empty = new Empty(x, y);
-                map[y][x] = empty;
+                getMap()[y][x] = empty;
             }
         });
         t.start();
@@ -245,7 +250,7 @@ public class MapControl {
         int amount = Integer.parseInt(details[2]);
 
         CoinPack coin = new CoinPack(amount, time, x, y);
-        map[y][x] = coin;
+        getMap()[y][x] = coin;
         coinPacks.add(coin);
         Thread t = new Thread(new Runnable() {
             @Override
@@ -256,7 +261,7 @@ public class MapControl {
                 }
                 coinPacks.remove(coin);
                 Empty empty = new Empty(x, y);
-                map[y][x] = empty;
+                getMap()[y][x] = empty;
             }
         });
         t.start();
@@ -264,11 +269,25 @@ public class MapControl {
 
     public void printMap() {
         System.out.println("");
-        for (int i = 0; i < map.length; i++) {
-            for (int j = 0; j < map[i].length; j++) {
-                System.out.print(map[i][j].getType() + "  ");
+        for (int i = 0; i < getMap().length; i++) {
+            for (int j = 0; j < getMap()[i].length; j++) {
+                System.out.print(getMap()[i][j].getType() + "  ");
             }
             System.out.println("");
         }
+    }
+
+    /**
+     * @return the map
+     */
+    public Actor[][] getMap() {
+        return map;
+    }
+
+    /**
+     * @param map the map to set
+     */
+    public void setMap(Actor[][] map) {
+        this.map = map;
     }
 }
