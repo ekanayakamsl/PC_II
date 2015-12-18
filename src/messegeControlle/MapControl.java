@@ -26,7 +26,9 @@ public class MapControl {
 
     private Actor[][] map;
     private ArrayList<Player> players;
-    
+    private ArrayList<CoinPack> coinPacks;
+    private ArrayList<LifePack> lifePacks;
+
     private AI ai;
     int clientId;
 
@@ -40,6 +42,8 @@ public class MapControl {
         }
         ai = new AI();
         players = new ArrayList<Player>();
+        coinPacks = new ArrayList<CoinPack>();
+        lifePacks = new ArrayList<LifePack>();
     }
 
     public void initializeMap(String s) {
@@ -152,7 +156,12 @@ public class MapControl {
             int points = Integer.parseInt(st.nextToken());
 
             Player player = new Player(playerName, direction, whetherShot, coins, points, health, x, y);
-            setPlayerOnMap(player);
+            if (player.getHealth() != 0) {
+                setPlayerOnMap(player);
+            } else {
+                Empty empty = new Empty(player.getX(), player.getY());
+                map[player.getY()][player.getX()] = empty;
+            }
         }
 
         String s1 = tokenizer.nextToken();
@@ -172,7 +181,7 @@ public class MapControl {
         }
 
         System.out.println(" client name" + players.get(clientId).getName());
-        String msg = ai.processInputMessege(map, players.get(clientId));
+        String msg = ai.processInputMessege(map, players.get(clientId), lifePacks, coinPacks);
         System.out.println("net meggage == " + msg);
         tankClient.run(msg);
     }
@@ -206,21 +215,21 @@ public class MapControl {
         LifePack lifePack = new LifePack(time, x, y);
         map[y][x] = lifePack;
         Thread t = null;
+        lifePacks.add(lifePack);
         t = new Thread(new Runnable() {
-
             @Override
             public void run() {
                 try {
                     Thread.sleep(time);
                 } catch (InterruptedException ex) {
                 }
+                lifePacks.remove(lifePack);
                 Empty empty = new Empty(x, y);
                 map[y][x] = empty;
             }
         });
         t.start();
-
-        System.out.println("LIFE PACK X  =" + y + " Y =" + x + " time " + time);
+        System.out.println("LIFE PACK X  =" + x + " Y =" + y + " time " + time);
 
     }
 
@@ -232,11 +241,12 @@ public class MapControl {
         int x = Integer.parseInt(positions[0]);
         int y = Integer.parseInt(positions[1]);
 
-        int amount = Integer.parseInt(details[1]);
-        int time = Integer.parseInt(details[2]);
+        int time = Integer.parseInt(details[1]);
+        int amount = Integer.parseInt(details[2]);
 
         CoinPack coin = new CoinPack(amount, time, x, y);
         map[y][x] = coin;
+        coinPacks.add(coin);
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -244,6 +254,7 @@ public class MapControl {
                     Thread.sleep(time);
                 } catch (InterruptedException ex) {
                 }
+                coinPacks.remove(coin);
                 Empty empty = new Empty(x, y);
                 map[y][x] = empty;
             }
@@ -260,5 +271,4 @@ public class MapControl {
             System.out.println("");
         }
     }
-
 }

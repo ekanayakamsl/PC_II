@@ -7,7 +7,9 @@ package AI;
 
 import Actor.Actor;
 import Actor.CoinPack;
+import Actor.LifePack;
 import Actor.Player;
+import java.util.ArrayList;
 import tank.TankClient;
 
 /**
@@ -36,7 +38,7 @@ public class AI {
 
     }
 
-    public String processInputMessege(Actor[][] map, Player player) {
+    public String processInputMessege(Actor[][] map, Player player, ArrayList<LifePack> lifePacks, ArrayList<CoinPack> coinPacks) {
         //Map map = new Map();
 
         Umark = 0;
@@ -44,9 +46,12 @@ public class AI {
         Dmark = 0;
         Lmark = 0;
 
-        checkMove.checkObstaclesAndBoundary(player, map);
+        checkMove.checkObstaclesAndBoundary(player, map, lifePacks, coinPacks);
         String nextMove = checkMove.findBestMove();
         System.out.println(Umark + "  " + Rmark + "  " + Dmark + "  " + Lmark);
+        if (checkMove.checkForShoot(map, player)) {
+            nextMove = "SHOOT#";
+        }
         System.out.println(nextMove);
         return nextMove;
 

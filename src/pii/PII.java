@@ -3,14 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package pii;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import messegeControlle.MapControl;
-import tank.ServerConnector;
-import tank.TankClient;
 
 /**
  *
@@ -21,21 +16,21 @@ public class PII {
     /**
      * @param args the command line arguments
      */
-    
-    
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         // TODO code application logic here
-        ArrayList<String> strings = new ArrayList<>();
-        strings.add("a");
-        strings.add("b");
-        strings.add("c");
-        strings.add("d");
-        
-        System.out.println(strings.get(1));
-        
-        
-        
-        
+        A a1 =new A();
+        a1.a = 10;
+        System.out.println(a1.a);
+        A a2 =new A();
+        System.out.println(a2.a);
+
     }
-    
+
+}
+
+class A {
+    public static int a = 0; 
+    A(){
+        a  =0;
+    }
 }
