@@ -25,7 +25,7 @@ public class PII {
         CheckMove checkMove = new CheckMove();
         CoinPack coinPack = new CoinPack(100,10,2,3);
         Player player = new Player("p",1,100,3,5,10,5,5);
-        checkMove.CreateValueMap(coinPack, player);
+        //checkMove.shorterstPath(coinPack, player);
 
         //    }
     }

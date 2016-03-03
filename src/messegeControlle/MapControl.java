@@ -8,6 +8,7 @@ package messegeControlle;
 import AI.AI;
 import Actor.Actor;
 import Actor.Brick;
+import Actor.CoinAndLifePack;
 import Actor.CoinPack;
 import Actor.Empty;
 import Actor.LifePack;
@@ -26,10 +27,9 @@ public class MapControl {
 
     private Actor[][] map;
     private ArrayList<Player> players;
-    private ArrayList<CoinPack> coinPacks;
-    private ArrayList<LifePack> lifePacks;
+    private ArrayList<CoinAndLifePack> coinAndLifePacks;
+    private int coinLifePackCount;
 
-    private AI ai;
     int clientId;
 
     public MapControl() {
@@ -40,10 +40,31 @@ public class MapControl {
                 map[i][j] = empty;
             }
         }
-        ai = new AI();
         players = new ArrayList<Player>();
-        coinPacks = new ArrayList<CoinPack>();
-        lifePacks = new ArrayList<LifePack>();
+        coinAndLifePacks = new ArrayList<CoinAndLifePack>();
+        coinLifePackCount = 0;
+    }
+
+    /**
+     * @return the map
+     */
+    public Actor[][] getMap() {
+        return map;
+    }
+
+    public ArrayList<CoinAndLifePack> getCoinAndLifePacks() {
+        return coinAndLifePacks;
+    }
+
+    /**
+     * @param map the map to set
+     */
+    public void setMap(Actor[][] map) {
+        this.map = map;
+    }
+
+    public void setCoinAndLifePacks(ArrayList<CoinAndLifePack> coinAndLifePacks) {
+        this.coinAndLifePacks = coinAndLifePacks;
     }
 
     public void initializeMap(String s) {
@@ -105,7 +126,6 @@ public class MapControl {
 
     public void setPlayer(String s) {
         String string = s.substring(2, s.length() - 1);
-
         StringTokenizer tokenizer = new StringTokenizer(string, ";");
 
         Player player = new Player();
@@ -156,6 +176,7 @@ public class MapControl {
             int points = Integer.parseInt(st.nextToken());
 
             Player player = new Player(playerName, direction, whetherShot, coins, points, health, x, y);
+            System.out.println(player.getName() + "  " + player.getDirection() + " x= " + player.getX() + " y= " + player.getY());
             if (player.getHealth() != 0) {
                 setPlayerOnMap(player);
             } else {
@@ -185,23 +206,21 @@ public class MapControl {
             }
         }
 
-        System.out.println(" client name" + players.get(clientId).getName());
-        String msg = ai.processInputMessege(getMap(), players.get(clientId), lifePacks, coinPacks);
-        System.out.println("net meggage == " + msg);
+        AI ai = new AI();
+        System.out.println(players.get(clientId).getName() + " d  " + players.get(clientId).getDirection() + " x= " + players.get(clientId).getX() + " y= " + players.get(clientId).getY());
+        String msg = ai.processInputMessege(getMap(), players.get(clientId), getCoinAndLifePacks());
         tankClient.run(msg);
     }
 
     private void setPlayerOnMap(Player player) {
         char playerNum = player.getName().charAt(1);
         int a = Integer.parseInt(String.valueOf(playerNum));
-        System.out.println(a);
         if (players.size() <= a) {
             players.add(player);
         } else if ((players.get(a).getY() != player.getY()) || (players.get(a).getX() != player.getX())) {
             Empty empty = new Empty(players.get(a).getX(), players.get(a).getY());
             getMap()[players.get(a).getY()][players.get(a).getX()] = empty;
             players.set(a, player);
-            System.out.println("(players[a].getY() != player.getY()) || (players[a].getX() != player.getX()");
         }
         getMap()[player.getY()][player.getX()] = player;
     }
@@ -209,33 +228,40 @@ public class MapControl {
     public void updateLifepack(String string) {
 
         String l = string.substring(2, string.length() - 1);
-        System.out.println(l);
         String details[] = l.split(":");
-        System.out.println(details[0]);
         String[] positions = details[0].split(",");
         int x = Integer.parseInt(positions[0]);
         int y = Integer.parseInt(positions[1]);
         int time = Integer.parseInt(details[1]);
 
         LifePack lifePack = new LifePack(time, x, y);
+        lifePack.setAlive(true);
         getMap()[y][x] = lifePack;
         Thread t = null;
-        lifePacks.add(lifePack);
+
         t = new Thread(new Runnable() {
+
             @Override
             public void run() {
-                try {
-                    Thread.sleep(time);
-                } catch (InterruptedException ex) {
+                int reaminTime = time;
+                int index = coinLifePackCount;
+                getCoinAndLifePacks().add(index, lifePack);
+                coinLifePackCount++;
+
+                while (reaminTime > 0) {
+                    reaminTime = reaminTime - 1000;
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException ex) {
+                    }
+                    getCoinAndLifePacks().get(index).setRemainTime(reaminTime);
                 }
-                lifePacks.remove(lifePack);
+                getCoinAndLifePacks().get(index).setAlive(false);
                 Empty empty = new Empty(x, y);
                 getMap()[y][x] = empty;
             }
         });
         t.start();
-        System.out.println("LIFE PACK X  =" + x + " Y =" + y + " time " + time);
-
     }
 
     public void updateCoin(String string) {
@@ -250,16 +276,28 @@ public class MapControl {
         int amount = Integer.parseInt(details[2]);
 
         CoinPack coin = new CoinPack(amount, time, x, y);
+        coin.setAlive(true);
         getMap()[y][x] = coin;
-        coinPacks.add(coin);
-        Thread t = new Thread(new Runnable() {
+
+        Thread t = null;
+
+        t = new Thread(new Runnable() {
+
             @Override
             public void run() {
-                try {
-                    Thread.sleep(time);
-                } catch (InterruptedException ex) {
+                int reaminTime = time;
+                int index = coinLifePackCount;
+                getCoinAndLifePacks().add(index, coin);
+                coinLifePackCount++;
+                while (reaminTime > 0) {
+                    reaminTime = reaminTime - 1000;
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException ex) {
+                    }
+                    getCoinAndLifePacks().get(index).setRemainTime(reaminTime);
                 }
-                coinPacks.remove(coin);
+                getCoinAndLifePacks().get(index).setAlive(false);
                 Empty empty = new Empty(x, y);
                 getMap()[y][x] = empty;
             }
@@ -277,17 +315,4 @@ public class MapControl {
         }
     }
 
-    /**
-     * @return the map
-     */
-    public Actor[][] getMap() {
-        return map;
-    }
-
-    /**
-     * @param map the map to set
-     */
-    public void setMap(Actor[][] map) {
-        this.map = map;
-    }
 }
