@@ -3,21 +3,19 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package Actor;
 
 /**
  *
  * @author sranga
  */
-public class LifePack extends Actor{
+public class LifePack extends CoinAndLifePack {
+
     private int duration;
 
     public LifePack() {
     }
 
-    
-    
     public LifePack(int duration, int x, int y) {
         super(x, y, "L");
         this.duration = duration;

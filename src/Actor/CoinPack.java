@@ -9,7 +9,7 @@ package Actor;
  *
  * @author Buddhi
  */
-public class CoinPack extends Actor{
+public class CoinPack extends CoinAndLifePack {
 
     private int amount;
     private int duration;
@@ -39,6 +39,4 @@ public class CoinPack extends Actor{
         this.duration = duration;
     }
 
-    
-    
 }
