@@ -32,9 +32,11 @@ public class testAI {
         
                
         CheckMove checkMove = new CheckMove();
-        Player player = new Player("p1", 0, 0, 100, 1000, 1000, 3, 3);
-        CoinPack coinPack = new CoinPack(100, 100, 6, 6);
-        checkMove.findMoveCount(player, coinPack, actorses);
+        Player player = new Player("p1", 0, 0, 100, 1000, 1000, 0, 0);
+        CoinPack coinPack = new CoinPack(100, 100, 4, 4);
+        
+        checkMove.shorterstPath(player, coinPack, actorses);
+        
         System.out.println(coinPack.getTankDirection());
         System.out.println(coinPack.getMoveCount());
         

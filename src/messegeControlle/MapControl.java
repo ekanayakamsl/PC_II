@@ -182,7 +182,7 @@ public class MapControl {
             int points = Integer.parseInt(st.nextToken());
 
             Player player = new Player(playerName, direction, whetherShot, coins, points, health, x, y);
-            
+
             if (player.getHealth() != 0) {
                 if (player.getName().charAt(1) == client.getName().charAt(1)) {
                     Empty empty = new Empty(client.getX(), client.getY());
@@ -220,12 +220,6 @@ public class MapControl {
         }
 
         AI ai = new AI();
-        for (int j = 0; j < 10; j++) {
-            for (int k = 0; k < 10; k++) {
-                System.out.print(getMap()[j][i].getType() + " ");
-            }
-            System.out.println("");
-        }
         String msg = ai.processInputMessege(getMap(), client, getCoinAndLifePacks());
         tankClient.run(msg);
     }
@@ -320,16 +314,6 @@ public class MapControl {
             }
         });
         t.start();
-    }
-
-    public void printMap() {
-        System.out.println("");
-        for (int i = 0; i < getMap().length; i++) {
-            for (int j = 0; j < getMap()[i].length; j++) {
-                System.out.print(getMap()[i][j].getType() + "  ");
-            }
-            System.out.println("");
-        }
     }
 
 }

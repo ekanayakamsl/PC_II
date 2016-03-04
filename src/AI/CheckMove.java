@@ -7,9 +7,9 @@ package AI;
 
 import Actor.Actor;
 import Actor.CoinAndLifePack;
-import Actor.Empty;
+import Actor.CoinPack;
+import Actor.LifePack;
 import Actor.Player;
-import com.sun.jndi.ldap.Ber;
 import java.util.ArrayList;
 
 /**
@@ -18,78 +18,7 @@ import java.util.ArrayList;
  */
 public class CheckMove {
 
-//    int[][] valueMap = new int[10][10];
-    static int pretankX;
-    static int preTankY;
-
-    public MoveWeight checkObstaclesAndBoundary(Player tank, Actor[][] map, MoveWeight moveWeight, int[][] valueMap) {
-
-        int curentX = tank.getX();
-        int curentY = tank.getY();
-        int minInf = Integer.MIN_VALUE;
-
-//        Actor destinationActor = findBestdestination(lifePacksAndCoinPacks, tank);
-        //CreateValueMap(destinationActor, tank);
-        try {
-            if (map[curentY - 1][curentX].getType() == "W" || map[curentY - 1][curentX].getType() == "S" || map[curentY - 1][curentX].getType() == "T") {
-                moveWeight.setUp(moveWeight.getUp() - 100000);
-            } else if (tank.getDirection() == 0 && map[curentY - 1][curentX].getType() == "B") {
-                moveWeight.setUp(moveWeight.getUp() - 100000);
-            } else {
-                moveWeight.setUp(moveWeight.getUp() + valueMap[curentY - 1][curentX]);
-            }
-        } catch (java.lang.ArrayIndexOutOfBoundsException arrayIndexOutOfBoundsException) {
-            moveWeight.setUp(moveWeight.getUp() - 100000);
-
-        }
-        //check for right
-        try {
-            if (map[curentY][curentX + 1].getType() == "W" || map[curentY][curentX + 1].getType() == "S" || map[curentY][curentX + 1].getType() == "T") {
-                moveWeight.setRight(moveWeight.getRight() - 100000);
-            } else if (tank.getDirection() == 1 && map[curentY][curentX + 1].getType() == "B") {
-                moveWeight.setRight(moveWeight.getRight() - 100000);
-
-            } else {
-                moveWeight.setRight(moveWeight.getRight() + valueMap[curentY][curentX + 1]);
-            }
-
-        } catch (java.lang.ArrayIndexOutOfBoundsException arrayIndexOutOfBoundsException) {
-            moveWeight.setRight(moveWeight.getRight() - 100000);
-
-        }
-        //check for down
-
-        try {
-            if (map[curentY + 1][curentX].getType() == "W" || map[curentY + 1][curentX].getType() == "S" || map[curentY + 1][curentX].getType() == "T") {
-                moveWeight.setDown(moveWeight.getDown() - 100000);
-
-            } else if (tank.getDirection() == 2 && map[curentY + 1][curentX].getType() == "B") {
-                moveWeight.setDown(moveWeight.getDown() - 100000);
-
-            } else {
-                moveWeight.setDown(moveWeight.getDown() + valueMap[curentY + 1][curentX]);
-            }
-        } catch (java.lang.ArrayIndexOutOfBoundsException arrayIndexOutOfBoundsException) {
-            moveWeight.setDown(moveWeight.getDown() - 100000);
-
-        }
-
-        //check for left
-        try {
-            if (map[curentY][curentX - 1].getType() == "W" || map[curentY][curentX - 1].getType() == "S" || map[curentY][curentX - 1].getType() == "B" || map[curentY][curentX - 1].getType() == "T") {
-                moveWeight.setLeft(moveWeight.getLeft() - 100000);
-
-            } else if (tank.getDirection() == 3 && map[curentY][curentX - 1].getType() == "B") {
-                moveWeight.setLeft(moveWeight.getLeft() - 100000);
-
-            } else {
-                moveWeight.setLeft(moveWeight.getLeft() + valueMap[curentY][curentX - 1]);
-            }
-        } catch (java.lang.ArrayIndexOutOfBoundsException arrayIndexOutOfBoundsException) {
-            moveWeight.setLeft(moveWeight.getLeft() - 100000);
-        }
-        return moveWeight;
-    }
+    static int[][] valueMap;
 
     public MoveWeight checkObstaclesAndBoundary(Player tank, Actor[][] map, MoveWeight moveWeight) {
 
@@ -97,8 +26,6 @@ public class CheckMove {
         int curentY = tank.getY();
         int minInf = Integer.MIN_VALUE; //-2147483648
 
-//        Actor destinationActor = findBestdestination(lifePacksAndCoinPacks, tank);
-        //CreateValueMap(destinationActor, tank);
         try {
             if (map[curentY - 1][curentX].getType() == "W" || map[curentY - 1][curentX].getType() == "S" || map[curentY - 1][curentX].getType() == "T") {
                 moveWeight.setUp(minInf);
@@ -161,248 +88,48 @@ public class CheckMove {
         return coinAndLifePacks;
     }
 
-    public int findBestMove(MoveWeight moveWeight) {
+    /////find best destination
+    public CoinAndLifePack findBestdestination(Player player, ArrayList<CoinAndLifePack> coinAndLifePacks, MoveWeight moveWeigh, Actor[][] map) {
 
-        int marks[] = {moveWeight.getUp(), moveWeight.getRight(), moveWeight.getDown(), moveWeight.getLeft()};
-        int maxMark = marks[0];
+        if (coinAndLifePacks.size() > 0) {
+            CoinAndLifePack destination = coinAndLifePacks.get(0);
+            for (CoinAndLifePack coinAndLifePack : coinAndLifePacks) {
+                if (coinAndLifePack.isAlive() && map[coinAndLifePack.getY()][coinAndLifePack.getX()].getType() == "C") {
+                    int distance = Math.abs(player.getX() - coinAndLifePack.getX()) + Math.abs(player.getY() - coinAndLifePack.getY());
+                    if (distance * 1000 < coinAndLifePack.getRemainTime()) {
+                        if (coinAndLifePack.getType() == "C") {
+                            CoinPack cp = (CoinPack) coinAndLifePack;
+                            int w = (10 - distance) * 250 + cp.getAmount();
+                            coinAndLifePack.setWeight(w);
 
-        for (int i = 0; i < 3; i++) {
-            if (marks[i + 1] > maxMark) {
-                maxMark = marks[i + 1];
+                        } else {
+                            LifePack lp = (LifePack) coinAndLifePack;
+                            if (player.getHealth() <= 40) {
+                                int w = (10 - distance) * 250 + (50 - player.getHealth()) * 30;
+                                coinAndLifePack.setWeight(w);
+                            } else {
+                                int w = (10 - distance) * 250;
+                                coinAndLifePack.setWeight(w);
+                            }
+                        }
+                        if (destination.getWeight() < coinAndLifePack.getWeight()) {
+                            destination = coinAndLifePack;
+                        }
+                    } else {
+                        coinAndLifePack.setWeight(0);
+                    }
+                } else {
+                    coinAndLifePack.setWeight(0);
+                }
             }
-        }
-
-        if (maxMark > -10000) {
-            if (maxMark == moveWeight.getUp()) {
-                return 0;
-            } else if (maxMark == moveWeight.getRight()) {
-                return 1;
-            } else if (maxMark == moveWeight.getDown()) {
-                return 2;
-            } else {
-                return 3;
-            }
+            return destination;
         } else {
-            System.out.println("Cant move");
-            return 10;
+            return null;
         }
     }
 
-    private Actor findBestdestination(Player player, Actor[][] map, ArrayList<Actor> lifePacksAndCoinPacks, MoveWeight moveWeigh) {
-
-        Actor destination = new Actor();
-        destination = lifePacksAndCoinPacks.get(0);
-        return destination;
-    }
-
-    public Actor findMoveCount(Player player, Actor destination, Actor[][] map) {
-
-        int startX = player.getX();
-        int startY = player.getY();
-        int endX = destination.getX();
-        int endY = destination.getY();
-        Actor[][] tanPathMap = map;
-
-        int[][] valueMap = shorterstPath(endX, endY);
-        System.out.println("destination = ==" + endX + "," + endY);
-        for (int i = 0; i < 10; i++) {
-            for (int j = 0; j < 10; j++) {
-                System.out.print(valueMap[i][j] + "  ");
-            }
-            System.out.println();
-        }
-
-//        tanPathMap[startX][startY] = player;
-        Player tempPlayer = player;
-
-        int moveCount = 0;
-        int move = 10;
-        int nextMove = 10;
-        int steps = 0;
-        while ((tempPlayer.getX() != endX || tempPlayer.getY() != endY) && steps < 50) {
-            if ((tempPlayer.getX() == startX) && (tempPlayer.getY() == startY)) {
-                destination.setTankDirection(nextMove);
-            }
-            MoveWeight moveWeight = new MoveWeight(1000, 1000, 1000, 1000, 1000);
-            System.out.println("tep p " + tempPlayer.getX() + "," + tempPlayer.getY() + "," + tempPlayer.getDirection());
-
-            moveWeight = checkObstaclesAndBoundary(tempPlayer, map, moveWeight, valueMap);
-            move = findBestMove(moveWeight);
-            System.out.println(steps + " th move =" + move);
-            if (move == 10) {
-                System.out.println("breaked at " + steps);
-                break;
-            }
-            if ((Math.abs(nextMove - move) == 2)) {
-                moveCount--;
-            }
-            if (move == nextMove) {
-                valueMap = shorterstPath(endX, endY);
-                valueMap[tempPlayer.getY()][tempPlayer.getX()] = valueMap[tempPlayer.getY()][tempPlayer.getX()] - 500;
-                if (move == 0) {
-                    tempPlayer.setY(tempPlayer.getY() - 1);
-                } else if (move == 1) {
-                    tempPlayer.setX(tempPlayer.getX() + 1);
-                    System.out.println(tempPlayer.getX() + "," + tempPlayer.getY());
-                } else if (move == 2) {
-                    tempPlayer.setY(tempPlayer.getY() + 1);
-                } else if (move == 3) {
-                    tempPlayer.setX(tempPlayer.getX() - 1);
-                }
-                if (map[tempPlayer.getX()][tempPlayer.getY()].getType() == "T") {
-                    moveCount = moveCount - 2;
-                }
-
-            }
-            tempPlayer.setDirection(move);
-            map[tempPlayer.getY()][tempPlayer.getX()] = player;
-            moveCount++;
-            steps++;
-            nextMove = move;
-            for (int i = 0; i < 10; i++) {
-                for (int j = 0; j < 10; j++) {
-                    System.out.print(map[i][j].getType() + "  ");
-                }
-                System.out.println();
-            }
-            for (int i = 0; i < 10; i++) {
-                for (int j = 0; j < 10; j++) {
-                    System.out.print(valueMap[i][j] + "  ");
-                }
-                System.out.println();
-            }
-        }
-        destination.setMoveCount(moveCount);
-        return destination;
-    }
-
-    public int[][] shorterstPath(int endX, int endY) {
-        int[][] valueMap = new int[10][10];
-
-        for (int i = 0; i < 10; i++) {
-            for (int j = 0; j < 10; j++) {
-                valueMap[i][j] = (20 - Math.abs(-endX + j) - Math.abs(-endY + i)) * 10;
-            }
-        }
-        return valueMap;
-    }
-
-    /*
-     private Actor[][] setTankOnMap(Player player, int nextMove, Actor[][] map) {
-     int x = player.getX();
-     int y = player.getY();
-     if (nextMove == 0) {
-     map[x][y - 1] = player;
-     }
-     if (nextMove == 1) {
-     map[x + 1][y] = player;
-     }
-     if (nextMove == 2) {
-     map[x][y + 1] = player;
-     }
-     if (nextMove == 3) {
-     map[x - 1][y] = player;
-     }
-     return map;
-     }
-    
-     */
-    /*
-     public int[][] shorterstPath(Actor destination, Player player) {
-
-     int[][] valueMap = new int[10][10];
-     for (int i = 0; i < 10; i++) {
-     for (int j = 0; j < 10; j++) {
-     valueMap[i][j] = 0;
-     }
-     }
-     if (destination.getType() != "O") {
-     int pointrxX = -destination.getX();//-5
-     int pointrxY = -destination.getY();//-5
-     for (int i = 0; i < 10; i++) {
-     for (int j = 0; j < 10; j++) {
-     valueMap[i][j] = (valueMap[i][j] - Math.abs(pointrxX + j) - Math.abs(pointrxY + i)) * 10;
-     }
-     }
-     } else {
-     System.out.println("invalid destination");
-     //}
-     }
-
-     /*valueMap[preTankY][pretankX] = valueMap[preTankY][pretankX] - 3;
-     pretankX = player.getX();
-     preTankY = player.getY();
-     for (int i = 0; i < 10; i++) {
-     for (int j = 0; j < 10; j++) {
-     System.out.print(valueMap[i][j] + "  ");
-     }
-     System.out.println("");
-     }
-         
-     return valueMap;
-
-     }
-     
-     public boolean checkForShoot(Actor[][] map, Player tank) {
-     int x = tank.getX();
-     int y = tank.getY();
-     if (tank.getDirection() == 0) {
-     if (y - 1 >= 0 && map[y - 1][x].getType() == "B") {
-     return true;
-     } else {
-     for (int i = y - 1; i >= 0; i--) {
-     if (map[i][x].getType() == "T") {
-     return true;
-     } else if (map[i][x].getType() == "S") {
-     return false;
-     }
-     }
-     }
-
-     } else if (tank.getDirection() == 1) {
-     if (x + 1 <= 9 && map[y][x + 1].getType() == "B") {
-     return true;
-     } else {
-     for (int i = x + 1; i <= 9; i++) {
-     if (map[y][i].getType() == "T") {
-     return true;
-     } else if (map[y][i].getType() == "S") {
-     return false;
-     }
-     }
-     }
-
-     } else if (tank.getDirection() == 2) {
-
-     if (x + 1 <= 9 && map[y + 1][x].getType() == "B") {
-     return false;
-     } else {
-
-     for (int i = y + 1; i <= 9; i++) {
-     if (map[i][x].getType() == "T") {
-     return true;
-     } else if (map[i][x].getType() == "S") {
-     return false;
-     }
-     }
-     }
-     } else {
-     if (x - 1 >= 0 && map[y][x - 1].getType() == "B") {
-
-     } else {
-     for (int i = x - 1; i >= 0; i--) {
-     if (map[y][i].getType() == "T") {
-     return true;
-     } else if (map[y][i].getType() == "S") {
-     return false;
-     }
-     }
-     }
-     }
-     return false;
-     }
-     */
-    public MoveWeight checkForShoot(Actor[][] map, Player player, MoveWeight moveWeight) {
+    ///check for shoot
+    public MoveWeight checkForTankShoot(Actor[][] map, Player player, MoveWeight moveWeight) {
 
         int x = player.getX();
         int y = player.getY();
@@ -410,9 +137,7 @@ public class CheckMove {
 
         int tankShootWeight = 50000000;
         int tankDirWeight = 10000000;
-        int brickShootWeight = 500000;
-        int brickDirWeight = 100000;
-        
+
         //check up
         for (int i = y - 1; i >= 0; i--) {
             if (map[i][x].getType() == "S") {
@@ -423,14 +148,6 @@ public class CheckMove {
                     break;
                 } else {
                     moveWeight.setUp(moveWeight.getUp() + tankDirWeight);
-                    break;
-                }
-            } else if (map[i][x].getType() == "B") {
-                if (d == 0) {
-                    moveWeight.setShoot(moveWeight.getShoot() + brickShootWeight);
-                    break;
-                } else {
-                    moveWeight.setUp(moveWeight.getUp() + brickDirWeight);
                     break;
                 }
             }
@@ -447,14 +164,6 @@ public class CheckMove {
                     moveWeight.setRight(moveWeight.getRight() + tankDirWeight);
                     break;
                 }
-            } else if (map[y][i].getType() == "B") {
-                if (d == 1) {
-                    moveWeight.setShoot(moveWeight.getShoot() + brickShootWeight);
-                    break;
-                } else {
-                    moveWeight.setRight(moveWeight.getRight() + brickDirWeight);
-                    break;
-                }
             }
         }
         //check down
@@ -467,14 +176,6 @@ public class CheckMove {
                     break;
                 } else {
                     moveWeight.setDown(moveWeight.getDown() + tankDirWeight);
-                    break;
-                }
-            } else if (map[i][x].getType() == "B") {
-                if (d == 2) {
-                    moveWeight.setShoot(moveWeight.getShoot() + brickShootWeight);
-                    break;
-                } else {
-                    moveWeight.setDown(moveWeight.getDown() + brickDirWeight);
                     break;
                 }
             }
@@ -491,12 +192,253 @@ public class CheckMove {
                     moveWeight.setLeft(moveWeight.getLeft() + tankDirWeight);
                     break;
                 }
-            } else if (map[y][i].getType() == "B") {
-                if (d == 3) {
-                    moveWeight.setShoot(moveWeight.getShoot() + brickShootWeight);
+            }
+        }
+        return moveWeight;
+    }
+
+    MoveWeight checkForBrickShoot(Actor[][] map, Player player, MoveWeight moveWeight) {
+        int x = player.getX();
+        int y = player.getY();
+        int d = player.getDirection();
+
+        int shootNearBrick = 5000000;
+        int brickShootWeight = 50000;
+        int brickDirWeight = 10000;
+
+        if (y - 1 >= 0 && map[y - 1][x].getType() == "B" && d == 0) {
+            moveWeight.setShoot(moveWeight.getShoot() + shootNearBrick);
+        } else if (x + 1 <= 9 && map[y][x + 1].getType() == "B" && d == 1) {
+            moveWeight.setShoot(moveWeight.getShoot() + shootNearBrick);
+        } else if (y + 1 <= 9 && map[y + 1][x].getType() == "B" && d == 2) {
+            moveWeight.setShoot(moveWeight.getShoot() + shootNearBrick);
+        } else if (x - 1 >= 0 && map[y][x - 1].getType() == "B" && d == 3) {
+            moveWeight.setShoot(moveWeight.getShoot() + shootNearBrick);
+        } else {
+            //check up
+            for (int i = y - 2; i >= 0; i--) {
+                if (map[i][x].getType() == "S") {
+                    break;
+                } else if (map[i][x].getType() == "B") {
+                    if (d == 0) {
+                        moveWeight.setShoot(moveWeight.getShoot() + brickShootWeight);
+                        break;
+                    } else {
+                        moveWeight.setUp(moveWeight.getUp() + brickDirWeight);
+                        break;
+                    }
+                }
+            }
+            //check right
+            for (int i = x + 2; i <= 9; i++) {
+                if (map[y][i].getType() == "S") {
+                    break;
+                } else if (map[y][i].getType() == "B") {
+                    if (d == 1) {
+                        moveWeight.setShoot(moveWeight.getShoot() + brickShootWeight);
+                        break;
+                    } else {
+                        moveWeight.setRight(moveWeight.getRight() + brickDirWeight);
+                        break;
+                    }
+                }
+            }
+            //check down
+            for (int i = y + 2; i <= 9; i++) {
+                if (map[i][x].getType() == "S") {
+                    break;
+                } else if (map[i][x].getType() == "B") {
+                    if (d == 2) {
+                        moveWeight.setShoot(moveWeight.getShoot() + brickShootWeight);
+                        break;
+                    } else {
+                        moveWeight.setDown(moveWeight.getDown() + brickDirWeight);
+                        break;
+                    }
+                }
+            }
+            //check left
+            for (int i = x - 2; i >= 0; i--) {
+                if (map[y][i].getType() == "S") {
+                    break;
+                } else if (map[y][i].getType() == "B") {
+                    if (d == 3) {
+                        moveWeight.setShoot(moveWeight.getShoot() + brickShootWeight);
+                        break;
+                    } else {
+                        moveWeight.setLeft(moveWeight.getLeft() + brickDirWeight);
+                        break;
+                    }
+                }
+            }
+        }
+        return moveWeight;
+    }
+
+    ////////////////////////
+//shorterst path finding
+    int[][] shorterstPath(Player player, CoinAndLifePack destination, Actor[][] map) {
+        valueMap = new int[10][10];
+        int[][] vaIses = chreateMap(map);
+        move(player.getX(), player.getY(), destination.getX(), destination.getY(), 1, vaIses);
+        findPath(destination.getX(), destination.getY(), vaIses);
+        return valueMap;
+    }
+
+    void move(int x, int y, int x1, int y1, int c, int[][] map) {
+
+        try {
+            if (map[y][x] == -1) {
+                //    printMap(map);
+                return;
+            }
+            if (map[y][x] < c && map[y][x] != 0) {
+                return;
+            }
+        } catch (Exception e) {
+            //    printMap(map);
+            return;
+        }
+        if (c > 15) {
+            //   printMap(map);
+            return;
+        } else if (x == x1 && y == y1) {
+            map[y][x] = c;
+            return;
+        } else {
+
+            map[y][x] = c;
+//            printMap(map);
+            move(x, y - 1, x1, y1, c + 1, map);
+            move(x + 1, y, x1, y1, c + 1, map);
+            move(x, y + 1, x1, y1, c + 1, map);
+            move(x - 1, y, x1, y1, c + 1, map);
+        }
+    }
+
+    private int[][] chreateMap(Actor[][] map) {
+        int[][] valMap = new int[10][10];
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 10; j++) {
+                if (map[i][j].getType() == "B" || map[i][j].getType() == "S" || map[i][j].getType() == "W") {
+                    valMap[i][j] = -1;
+                } else {
+                    valMap[i][j] = 0;
+                }
+            }
+        }
+        return valMap;
+    }
+
+    private int[][] findPath(int x, int y, int[][] map) {
+        valueMap[y][x] = 100 * map[y][x];
+        if (y - 1 >= 0 && map[y][x] == map[y - 1][x] + 1) {
+            findPath(x, y - 1, map);
+        } else if (x + 1 <= 9 && map[y][x] == map[y][x + 1] + 1) {
+            findPath(x + 1, y, map);
+        } else if (y + 1 <= 9 && map[y][x] == map[y + 1][x] + 1) {
+            findPath(x, y + 1, map);
+        } else if (x - 1 >= 0 && map[y][x] == map[y][x - 1] + 1) {
+            findPath(x - 1, y, map);
+        }
+        return map;
+    }
+
+    MoveWeight chechNextmoveForDes(Player player, int[][] valueMap, MoveWeight moveWeight) {
+        int weight = 100;
+        int x = player.getX();
+        int y = player.getY();
+        if (y - 1 >= 0) {
+            moveWeight.setUp(moveWeight.getUp() + valueMap[y - 1][x] * weight);
+        }
+        if (x + 1 <= 9) {
+            moveWeight.setRight(moveWeight.getRight() + valueMap[y][x + 1] * weight);
+        }
+        if (y + 1 <= 9) {
+            moveWeight.setDown(moveWeight.getDown() + valueMap[y + 1][x] * weight);
+        }
+        if (x - 1 >= 0) {
+            moveWeight.setLeft(moveWeight.getLeft() + valueMap[y][x - 1] * weight);
+        }
+        return moveWeight;
+    }
+
+//    ////////////////
+    //save from shootted
+    MoveWeight checkFofSave(Player player, Actor[][] map, MoveWeight moveWeight) {
+        int x = player.getX();
+        int y = player.getY();
+        int d = player.getDirection();
+
+        int saveWeight = 1000;
+        int factor = (70 - player.getHealth()) / 10;
+
+        for (int i = 0; i < factor; i++) {
+            saveWeight = saveWeight * 10;
+        }
+
+        //check up
+        for (int i = y - 1; i >= 0; i--) {
+            if (map[i][x].getType() == "S") {
+                break;
+            }
+            if (map[i][x].getType() == "T") {
+                if (d == 0 && d == 2) {
+                    moveWeight.setLeft(moveWeight.getLeft() + saveWeight);
+                    moveWeight.setRight(moveWeight.getRight() + saveWeight);
                     break;
                 } else {
-                    moveWeight.setLeft(moveWeight.getLeft() + brickDirWeight);
+                    moveWeight.setLeft(moveWeight.getUp() + saveWeight / 10);
+                    moveWeight.setRight(moveWeight.getUp() + saveWeight / 10);
+                    break;
+                }
+            }
+        }
+        //check right
+        for (int i = x + 1; i <= 9; i++) {
+            if (map[y][i].getType() == "S") {
+                break;
+            }
+            if (map[i][x].getType() == "T") {
+                if (d == 1 && d == 3) {
+                    moveWeight.setUp(moveWeight.getUp() + saveWeight);
+                    moveWeight.setDown(moveWeight.getDown() + saveWeight);
+                    break;
+                } else {
+                    moveWeight.setUp(moveWeight.getUp() + saveWeight / 10);
+                    moveWeight.setDown(moveWeight.getUp() + saveWeight / 10);
+                    break;
+                }
+            }
+        }
+        //check down
+        for (int i = y + 1; i <= 9; i++) {
+            if (map[i][x].getType() == "S") {
+                break;
+            }
+            if (d == 0 && d == 2) {
+                moveWeight.setLeft(moveWeight.getLeft() + saveWeight);
+                moveWeight.setRight(moveWeight.getRight() + saveWeight);
+                break;
+            } else {
+                moveWeight.setLeft(moveWeight.getUp() + saveWeight / 10);
+                moveWeight.setRight(moveWeight.getUp() + saveWeight / 10);
+                break;
+            }
+        }
+        //check left
+        for (int i = x - 1; i >= 0; i--) {
+            if (map[y][i].getType() == "S") {
+                break;
+            }
+            if (map[i][x].getType() == "T") {
+                if (d == 1 && d == 3) {
+                    moveWeight.setUp(moveWeight.getUp() + saveWeight);
+                    moveWeight.setDown(moveWeight.getDown() + saveWeight);
+                    break;
+                } else {
+                    moveWeight.setUp(moveWeight.getUp() + saveWeight / 10);
+                    moveWeight.setDown(moveWeight.getUp() + saveWeight / 10);
                     break;
                 }
             }

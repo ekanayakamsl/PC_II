@@ -54,10 +54,8 @@ public class ServerConnector extends Thread {
                 String string = br.readLine();
 
                 processString(string, tankClient);
-                mapControl.printMap();
-                mapObservable.update(mapControl.getMap());
+                //mapObservable.update(mapControl.getMap());
 
-                //tankClient.run("RIGHT#");
             } catch (IOException ex) {
                 Logger.getLogger(ServerConnector.class.getName()).log(Level.SEVERE, null, ex);
             }

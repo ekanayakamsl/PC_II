@@ -3,22 +3,14 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/E:/Academic/Sem%204/progamming%20ChalangeII/New%20folder%20(2)/New%20folder/PC_II/src/Actor/Empty.java</file>
-            <file>file:/E:/Academic/Sem%204/progamming%20ChalangeII/New%20folder%20(2)/New%20folder/PC_II/src/messegeControlle/MapControl.java</file>
-            <file>file:/E:/Academic/Sem%204/progamming%20ChalangeII/New%20folder%20(2)/New%20folder/PC_II/src/AI/MoveWeight.java</file>
-            <file>file:/E:/Academic/Sem%204/progamming%20ChalangeII/New%20folder%20(2)/New%20folder/PC_II/src/AI/AI.java</file>
             <file>file:/E:/Academic/Sem%204/progamming%20ChalangeII/New%20folder%20(2)/New%20folder/PC_II/src/AI/testAI.java</file>
-            <file>file:/E:/Academic/Sem%204/progamming%20ChalangeII/New%20folder%20(2)/New%20folder/PC_II/src/Actor/Water.java</file>
-            <file>file:/E:/Academic/Sem%204/progamming%20ChalangeII/New%20folder%20(2)/New%20folder/PC_II/src/Actor/Stone.java</file>
-            <file>file:/E:/Academic/Sem%204/progamming%20ChalangeII/New%20folder%20(2)/New%20folder/PC_II/src/Actor/LifePack.java</file>
             <file>file:/E:/Academic/Sem%204/progamming%20ChalangeII/New%20folder%20(2)/New%20folder/PC_II/src/AI/AiMap.java</file>
-            <file>file:/E:/Academic/Sem%204/progamming%20ChalangeII/New%20folder%20(2)/New%20folder/PC_II/src/Actor/Brick.java</file>
+            <file>file:/E:/Academic/Sem%204/progamming%20ChalangeII/New%20folder%20(2)/New%20folder/PC_II/src/messegeControlle/MapControl.java</file>
             <file>file:/E:/Academic/Sem%204/progamming%20ChalangeII/New%20folder%20(2)/New%20folder/PC_II/src/AI/CheckMove.java</file>
             <file>file:/E:/Academic/Sem%204/progamming%20ChalangeII/New%20folder%20(2)/New%20folder/PC_II/src/Actor/CoinAndLifePack.java</file>
-            <file>file:/E:/Academic/Sem%204/progamming%20ChalangeII/New%20folder%20(2)/New%20folder/PC_II/src/Actor/CoinPack.java</file>
-            <file>file:/E:/Academic/Sem%204/progamming%20ChalangeII/New%20folder%20(2)/New%20folder/PC_II/src/Actor/Player.java</file>
-            <file>file:/E:/Academic/Sem%204/progamming%20ChalangeII/New%20folder%20(2)/New%20folder/PC_II/src/pii/PII.java</file>
-            <file>file:/E:/Academic/Sem%204/progamming%20ChalangeII/New%20folder%20(2)/New%20folder/PC_II/src/Actor/Actor.java</file>
+            <file>file:/E:/Academic/Sem%204/progamming%20ChalangeII/New%20folder%20(2)/New%20folder/PC_II/src/AI/MoveWeight.java</file>
+            <file>file:/E:/Academic/Sem%204/progamming%20ChalangeII/New%20folder%20(2)/New%20folder/PC_II/src/tank/ServerConnector.java</file>
+            <file>file:/E:/Academic/Sem%204/progamming%20ChalangeII/New%20folder%20(2)/New%20folder/PC_II/src/AI/AI.java</file>
         </group>
     </open-files>
 </project-private>
