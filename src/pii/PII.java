@@ -22,11 +22,7 @@ public class PII {
     public static void main(String[] args) {
         
     
-        CheckMove checkMove = new CheckMove();
-        CoinPack coinPack = new CoinPack(100,10,2,3);
-        Player player = new Player("p",1,100,3,5,10,5,5);
-        //checkMove.shorterstPath(coinPack, player);
-
+        
         //    }
     }
 

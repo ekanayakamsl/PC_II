@@ -27,11 +27,11 @@ public class MapControl {
 
     private Actor[][] map;
     private ArrayList<Player> players;
+    Player client;
     private ArrayList<CoinAndLifePack> coinAndLifePacks;
     private int coinLifePackCount;
 
-    int clientId;
-
+    //int clientId;
     public MapControl() {
         map = new Actor[10][10];
         for (int i = 0; i < map.length; i++) {
@@ -41,6 +41,11 @@ public class MapControl {
             }
         }
         players = new ArrayList<Player>();
+        for (int i = 0; i < 5; i++) {
+            Player player = new Player();
+            player.setType("E");
+            players.add(player);
+        }
         coinAndLifePacks = new ArrayList<CoinAndLifePack>();
         coinLifePackCount = 0;
     }
@@ -142,9 +147,10 @@ public class MapControl {
         player.setPoints(0);
         player.setHealth(100);
 
-        players.add(player);
-        clientId = players.size() - 1;
-        getMap()[player.getY()][player.getX()] = player;
+        player.setType("C");
+        client = player;
+        //clientId = players.size() - 1;
+        getMap()[player.getY()][player.getX()] = client;
     }
 
 //    private void initPlayerOnMap(Player player) {
@@ -176,9 +182,16 @@ public class MapControl {
             int points = Integer.parseInt(st.nextToken());
 
             Player player = new Player(playerName, direction, whetherShot, coins, points, health, x, y);
-            System.out.println(player.getName() + "  " + player.getDirection() + " x= " + player.getX() + " y= " + player.getY());
+            
             if (player.getHealth() != 0) {
-                setPlayerOnMap(player);
+                if (player.getName().charAt(1) == client.getName().charAt(1)) {
+                    Empty empty = new Empty(client.getX(), client.getY());
+                    getMap()[client.getY()][client.getX()] = empty;
+                    client = player;
+                    getMap()[client.getY()][client.getX()] = client;
+                } else {
+                    setPlayerOnMap(player);
+                }
             } else {
                 Empty empty = new Empty(player.getX(), player.getY());
                 getMap()[player.getY()][player.getX()] = empty;
@@ -207,22 +220,26 @@ public class MapControl {
         }
 
         AI ai = new AI();
-        System.out.println(players.get(clientId).getName() + " d  " + players.get(clientId).getDirection() + " x= " + players.get(clientId).getX() + " y= " + players.get(clientId).getY());
-        String msg = ai.processInputMessege(getMap(), players.get(clientId), getCoinAndLifePacks());
+        for (int j = 0; j < 10; j++) {
+            for (int k = 0; k < 10; k++) {
+                System.out.print(getMap()[j][i].getType() + " ");
+            }
+            System.out.println("");
+        }
+        String msg = ai.processInputMessege(getMap(), client, getCoinAndLifePacks());
         tankClient.run(msg);
     }
 
     private void setPlayerOnMap(Player player) {
+
         char playerNum = player.getName().charAt(1);
         int a = Integer.parseInt(String.valueOf(playerNum));
-        if (players.size() <= a) {
-            players.add(player);
-        } else if ((players.get(a).getY() != player.getY()) || (players.get(a).getX() != player.getX())) {
+        if (players.get(a).getType() != "E") {
             Empty empty = new Empty(players.get(a).getX(), players.get(a).getY());
             getMap()[players.get(a).getY()][players.get(a).getX()] = empty;
-            players.set(a, player);
         }
-        getMap()[player.getY()][player.getX()] = player;
+        players.set(a, player);
+        getMap()[players.get(a).getY()][players.get(a).getX()] = player;
     }
 
     public void updateLifepack(String string) {
