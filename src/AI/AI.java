@@ -46,37 +46,53 @@ public class AI {
 
         moveWeight = checkMove.checkObstaclesAndBoundary(player, map, moveWeight);
 
+        moveWeight = checkMove.checkForBrickShoot(map, player, moveWeight);  //weights increas by 9000 / 1000
+        if (player.getHealth() >= 80) {
+            moveWeight = checkMove.checkTankForShoot(player, map, moveWeight);
+        }
         if (player.getHealth() >= 40) {
-            System.out.println("tank direction  " + player.getDirection() + " x " + player.getX() + " y " + player.getY());
             printPositionVector(map);
             moveWeight = checkMove.checkForTankShoot(map, player, moveWeight);
-            moveWeight = checkMove.checkForBrickShoot(map, player, moveWeight);
         } else {
-            moveWeight = checkMove.checkFofSave(player, map,moveWeight);
-            moveWeight = checkMove.checkForBrickShoot(map, player, moveWeight);
+            moveWeight = checkMove.checkFofSave(player, map, moveWeight);
+//            moveWeight = checkMove.checkForBrickShoot(map, player, moveWeight);
         }
 
         CoinAndLifePack destination = checkMove.findBestdestination(player, coinAndLifePacks, moveWeight, map);
         if (destination != null) {
             if (curentDes != null) {
                 if ((curentDes.getX() != destination.getX()) || (curentDes.getY() != destination.getY())) {
-                    if (destination.getWeight() > curentDes.getWeight() + valueMap[player.getY()][player.getX()]) {
-                        valueMap = checkMove.shorterstPath(player, destination, map);
+                    if (destination.getWeight() > curentDes.getWeight() + 700000) {
                         curentDes = destination;
-                    } else if (map[curentDes.getY()][curentDes.getX()].getType() != "C") {
-                        valueMap = new int[10][10];
-                    } else if (valueMap[player.getY()][player.getX()] == 0) {
-                        valueMap = checkMove.shorterstPath(player, curentDes, map);
+                    } else if (map[curentDes.getY()][curentDes.getX()].getType() != "C" || map[curentDes.getY()][curentDes.getX()].getType() != "L") {
+                        curentDes = destination;
                     }
                 }
             } else {
-                valueMap = checkMove.shorterstPath(player, destination, map);
                 curentDes = destination;
             }
+            valueMap = checkMove.shorterstPath(player, curentDes, map);
 
         }
+//        if (destination != null) {
+//            if (curentDes != null) {
+//                if ((curentDes.getX() != destination.getX()) || (curentDes.getY() != destination.getY())) {
+//                    if (destination.getWeight() > curentDes.getWeight() + valueMap[player.getY()][player.getX()]) {
+//                        valueMap = checkMove.shorterstPath(player, destination, map);
+//                        curentDes = destination;
+//                    } else if (map[curentDes.getY()][curentDes.getX()].getType() != "C") {
+//                        valueMap = new int[10][10];
+//                    } else if (valueMap[player.getY()][player.getX()] == 0) {
+//                        valueMap = checkMove.shorterstPath(player, curentDes, map);
+//                    }
+//                }
+//            } else {
+//                valueMap = checkMove.shorterstPath(player, destination, map);
+//                curentDes = destination;
+//            }
+//
+//        }
 
-       
         System.out.println("value map  next move");
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
@@ -128,6 +144,5 @@ public class AI {
             System.out.println("");
         }
     }
-
 
 }

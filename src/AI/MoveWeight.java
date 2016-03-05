@@ -11,11 +11,11 @@ package AI;
  * @author sranga
  */
 public class MoveWeight {
-    private int left = 1000;
-    private int right= 1000;
-    private int up= 1000;
-    private int down= 1000;
-    private int shoot= 900;
+    private int left = 100;
+    private int right= 100;
+    private int up= 100;
+    private int down= 100;
+    private int shoot= 90;
 
     public MoveWeight() {
     }

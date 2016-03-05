@@ -17,6 +17,7 @@ import Actor.Stone;
 import Actor.Water;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
+import javax.swing.text.PlainDocument;
 import tank.TankClient;
 
 /**
@@ -28,6 +29,7 @@ public class MapControl {
     private Actor[][] map;
     private ArrayList<Player> players;
     Player client;
+    String playerName;
     private ArrayList<CoinAndLifePack> coinAndLifePacks;
     private int coinLifePackCount;
 
@@ -73,16 +75,18 @@ public class MapControl {
     }
 
     public void initializeMap(String s) {
+
+        //I:P2:8,6;0,8;8,4;4,7;1,3;1,8;7,4:6,8;7,1;4,3;2,4;7,6;9,3;7,2;6,3:2,7;2,6;9,8;1,4;1,7;4,2;5,7;3,8;0,3;2,3#
         String string = s.substring(2, s.length() - 1);
 
 //        tokenize the string
         StringTokenizer tokenizer = new StringTokenizer(string, ":");
-        String player = tokenizer.nextToken();
+        this.playerName = tokenizer.nextToken();
         String bricks = tokenizer.nextToken();
         String stones = tokenizer.nextToken();
         String water = tokenizer.nextToken();
 
-        System.out.println("p: " + player + " bricks: " + bricks + " stones: " + stones + " water: " + water);
+        System.out.println("p: " + this.playerName + " bricks: " + bricks + " stones: " + stones + " water: " + water);
 
 //        tokenize string for bricks
         StringTokenizer brickTokenizer = new StringTokenizer(bricks, ";");
@@ -130,27 +134,35 @@ public class MapControl {
     }
 
     public void setPlayer(String s) {
+
+        //S:P0;0,0;0:P1;0,9;0:P2;9,0;0#
         String string = s.substring(2, s.length() - 1);
-        StringTokenizer tokenizer = new StringTokenizer(string, ";");
 
-        Player player = new Player();
-        player.setName(tokenizer.nextToken());
+        StringTokenizer tokenizer = new StringTokenizer(string, ":");
+        while (tokenizer.hasMoreTokens()) {
+            String bt = tokenizer.nextToken();
+            StringTokenizer token = new StringTokenizer(bt, ";");
+            Player player = new Player();
+            String name = token.nextToken();
+            String cod = token.nextToken();
+            String dir = token.nextToken();
+            player.setName(name);
+            player.setDirection(Integer.parseInt(dir));
 
-        String location = tokenizer.nextToken();
-        String[] split = location.split(",");
-        player.setX(Integer.parseInt(split[0]));
-        player.setY(Integer.parseInt(split[1]));
+            StringTokenizer token1 = new StringTokenizer(cod, ",");
+            player.setX(Integer.parseInt(token1.nextToken()));
+            player.setY(Integer.parseInt(token1.nextToken()));
+            player.setWhetherShot(0);
+            player.setCoins(0);
+            player.setPoints(0);
+            player.setHealth(100);
 
-        player.setDirection(Integer.parseInt(tokenizer.nextToken()));
-        player.setWhetherShot(0);
-        player.setCoins(0);
-        player.setPoints(0);
-        player.setHealth(100);
-
-        player.setType("C");
-        client = player;
-        //clientId = players.size() - 1;
-        getMap()[player.getY()][player.getX()] = client;
+            if (player.getName() == null ? this.playerName == null : player.getName().equals(this.playerName)) {
+                player.setType("P");
+                client = player;
+            }
+            getMap()[player.getY()][player.getX()] = player;
+        }
     }
 
 //    private void initPlayerOnMap(Player player) {
@@ -159,7 +171,7 @@ public class MapControl {
 //    }
     public void updateMap(String string, TankClient tankClient) {
         String s = string.substring(2, string.length() - 1);
-
+        
         StringTokenizer tokenizer = new StringTokenizer(s, ":");
 
         int i = tokenizer.countTokens();
@@ -220,6 +232,7 @@ public class MapControl {
         }
 
         AI ai = new AI();
+        client.setType("P");
         String msg = ai.processInputMessege(getMap(), client, getCoinAndLifePacks());
         tankClient.run(msg);
     }

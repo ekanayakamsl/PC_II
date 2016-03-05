@@ -39,6 +39,7 @@ public class ServerConnector extends Thread {
 
         mapObservable.addObserver(clientUI1);
         this.client = cli;
+
     }
 
     @Override
@@ -58,6 +59,8 @@ public class ServerConnector extends Thread {
 
             } catch (IOException ex) {
                 Logger.getLogger(ServerConnector.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (Exception e){
+                System.out.println(e.getMessage());
             }
         }
     }
@@ -81,7 +84,6 @@ public class ServerConnector extends Thread {
         } else if (string.startsWith("S")) {
             mapControl.setPlayer(string);
         }
-
         if (string.startsWith("G")) {
             mapControl.updateMap(string, tankClient);
         } else if (string.startsWith("L")) {
