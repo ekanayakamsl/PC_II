@@ -1,3 +1,3 @@
 # PC_II
-Tank game AI code.. 
-Shorterst path algorithem for map with obstacles 
+Tank game AI code....
+Shortest path algorithem for map with obstacles 
