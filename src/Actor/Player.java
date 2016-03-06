@@ -17,6 +17,8 @@ public class Player extends Actor {
     private int coins;
     private int points;
     private int health;
+    private int id;
+    private boolean isDeth = false;
 
     public Player() {
     }
@@ -31,6 +33,16 @@ public class Player extends Actor {
         this.health = health;
     }
 
+    public boolean isIsDeth() {
+        return isDeth;
+    }
+
+    public void setIsDeth(boolean isDeth) {
+        this.isDeth = isDeth;
+    }
+
+    
+    
     public String getName() {
         return name;
     }
@@ -55,6 +67,10 @@ public class Player extends Actor {
         return health;
     }
 
+    public int getId() {
+        return id;
+    }
+   
     public void setName(String name) {
         this.name = name;
     }
@@ -78,26 +94,9 @@ public class Player extends Actor {
     public void setHealth(int health) {
         this.health = health;
     }
-/*
-    public void moveTank(int properDir) {
-        if (this.direction == properDir) {
-            Map.WaterAndStoneMap[this.getY()][this.getX()] = "O";
-            Map.valueMap[this.getY()][this.getX()] = Map.valueMap[this.getY()][this.getX()] - 3;
 
-            if (this.direction == 0) {
-                this.setY(this.getY() - 1);
-
-            } else if (this.direction == 1) {
-                System.out.println("in");
-                this.setX(this.getX() + 1);
-            } else if (this.direction == 2) {
-                this.setY(this.getY() + 1);
-            } else if (this.direction == 3) {
-                this.setX(this.getX() - 1);
-            }
-        } else if (this.direction != 5) {
-            this.direction = properDir;
-        }
+    public void setId(int id) {
+        this.id = id;
     }
-*/
+    
 }

@@ -90,56 +90,60 @@ public class CheckMove {
     }
 
     /////find best destination
-    public CoinAndLifePack findBestdestination(Player player, ArrayList<CoinAndLifePack> coinAndLifePacks, MoveWeight moveWeigh, Actor[][] map) {
+    public CoinAndLifePack findBestdestination(Player player, MoveWeight moveWeigh, Actor[][] map) {
+        CoinAndLifePack destination = new CoinAndLifePack();
+        destination.setWeight(0);
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 10; j++) {
+                if (map[i][j].getType() == "C" || map[i][j].getType() == "L") {
+                    CoinAndLifePack coinAndLifePack = (CoinAndLifePack) map[i][j];
 
-        if (coinAndLifePacks.size() > 0) {
-            CoinAndLifePack destination = coinAndLifePacks.get(0);
-            for (CoinAndLifePack coinAndLifePack : coinAndLifePacks) {
-                if (coinAndLifePack.isAlive() && map[coinAndLifePack.getY()][coinAndLifePack.getX()].getType() == "C") {
-                    int xDistance = Math.abs(player.getX() - coinAndLifePack.getX());
-                    int yDistance = Math.abs(player.getY() - coinAndLifePack.getY());
-                    int distance = xDistance + yDistance;
-                    if (xDistance != 0 && yDistance != 0) {
-                        distance++;
-                    }
-                    if (distance * 1000 < coinAndLifePack.getRemainTime()) {
-                        int w = 0;
-                        if (distance == 1) {
-                            w = 90000000;
-                        } else if (distance == 2) {
-                            w = 10000000;
-                        } else if (distance == 3) {
-                            w = 7000000;
+                    if (coinAndLifePack.isAlive() && map[coinAndLifePack.getY()][coinAndLifePack.getX()].getType() == "C") {
+                        int xDistance = Math.abs(player.getX() - coinAndLifePack.getX());
+                        int yDistance = Math.abs(player.getY() - coinAndLifePack.getY());
+                        int distance = xDistance + yDistance;
+                        if (xDistance != 0 && yDistance != 0) {
+                            distance++;
                         }
-                        if (coinAndLifePack.getType() == "C") {
-                            CoinPack cp = (CoinPack) coinAndLifePack;
-                            w = w + (10 - distance) * 1000 + cp.getAmount();
-                            coinAndLifePack.setWeight(w);
-
-                        } else {
-                            LifePack lp = (LifePack) coinAndLifePack;
-                            if (player.getHealth() <= 40) {
-                                w = w + (15 - distance) * 1000 + (50 - player.getHealth()) * 100;
-                                coinAndLifePack.setWeight(w);
-                            } else {
-                                w = w + (15 - distance) * 1000;
-                                coinAndLifePack.setWeight(w);
+                        if (distance * 1000 < coinAndLifePack.getRemainTime()) {
+                            int w = 0;
+                            if (distance == 1) {
+                                w = 90000000;
+                            } else if (distance == 2) {
+                                w = 10000000;
+                            } else if (distance == 3) {
+                                w = 7000000;
                             }
-                        }
-                        if (destination.getWeight() < coinAndLifePack.getWeight()) {
-                            destination = coinAndLifePack;
+                            if (coinAndLifePack.getType() == "C") {
+                                CoinPack cp = (CoinPack) coinAndLifePack;
+                                w = w + (10 - distance) * 1000 + cp.getAmount();
+                                coinAndLifePack.setWeight(w);
+
+                            } else {
+                                LifePack lp = (LifePack) coinAndLifePack;
+                                if (player.getHealth() <= 40) {
+                                    w = w + (15 - distance) * 1000 + (50 - player.getHealth()) * 100;
+                                    coinAndLifePack.setWeight(w);
+                                } else {
+                                    w = w + (15 - distance) * 1000;
+                                    coinAndLifePack.setWeight(w);
+                                }
+                            }
+                            if (destination.getWeight() < coinAndLifePack.getWeight()) {
+                                destination = coinAndLifePack;
+                            }
+                        } else {
+                            coinAndLifePack.setWeight(0);
                         }
                     } else {
                         coinAndLifePack.setWeight(0);
                     }
-                } else {
-                    coinAndLifePack.setWeight(0);
+
                 }
             }
-            return destination;
-        } else {
-            return null;
         }
+        return destination;
+
     }
 
     ///check for shoot

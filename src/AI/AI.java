@@ -32,7 +32,7 @@ public class AI {
         map = new AiMap();
     }
 
-    public String processInputMessege(Actor[][] map, Player player, ArrayList<CoinAndLifePack> coinAndLifePacks) {
+    public String processInputMessege(Actor[][] map, Player player) {
 
         System.out.println("========================map===============================");
         for (int i = 0; i < 10; i++) {
@@ -58,8 +58,8 @@ public class AI {
 //            moveWeight = checkMove.checkForBrickShoot(map, player, moveWeight);
         }
 
-        CoinAndLifePack destination = checkMove.findBestdestination(player, coinAndLifePacks, moveWeight, map);
-        if (destination != null) {
+        CoinAndLifePack destination = checkMove.findBestdestination(player, moveWeight, map);
+        if (destination.getWeight() != 0) {
             if (curentDes != null) {
                 if ((curentDes.getX() != destination.getX()) || (curentDes.getY() != destination.getY())) {
                     if (destination.getWeight() > curentDes.getWeight() + 700000) {
@@ -72,26 +72,7 @@ public class AI {
                 curentDes = destination;
             }
             valueMap = checkMove.shorterstPath(player, curentDes, map);
-
         }
-//        if (destination != null) {
-//            if (curentDes != null) {
-//                if ((curentDes.getX() != destination.getX()) || (curentDes.getY() != destination.getY())) {
-//                    if (destination.getWeight() > curentDes.getWeight() + valueMap[player.getY()][player.getX()]) {
-//                        valueMap = checkMove.shorterstPath(player, destination, map);
-//                        curentDes = destination;
-//                    } else if (map[curentDes.getY()][curentDes.getX()].getType() != "C") {
-//                        valueMap = new int[10][10];
-//                    } else if (valueMap[player.getY()][player.getX()] == 0) {
-//                        valueMap = checkMove.shorterstPath(player, curentDes, map);
-//                    }
-//                }
-//            } else {
-//                valueMap = checkMove.shorterstPath(player, destination, map);
-//                curentDes = destination;
-//            }
-//
-//        }
 
         System.out.println("value map  next move");
         for (int i = 0; i < 10; i++) {
