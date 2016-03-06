@@ -41,9 +41,7 @@ public class AI {
             }
             System.out.println("");
         }
-        System.out.println("==palayer==");
-        System.out.println("x  = " + player.getX() + " y = " + player.getY() + " d = " + player.getDirection());
-
+        
         moveWeight = checkMove.checkObstaclesAndBoundary(player, map, moveWeight);
 
         moveWeight = checkMove.checkForBrickShoot(map, player, moveWeight);  //weights increas by 9000 / 1000

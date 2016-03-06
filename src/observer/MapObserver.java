@@ -6,6 +6,7 @@
 package observer;
 
 import Actor.Actor;
+import Actor.Player;
 
 /**
  *
@@ -13,5 +14,5 @@ import Actor.Actor;
  */
 public interface MapObserver {
 
-    void updateInterface(Actor map[][]);
+    void updateInterface(Actor map[][], Player[] players);
 }

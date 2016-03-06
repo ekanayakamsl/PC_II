@@ -8,7 +8,6 @@ package messegeControlle;
 import AI.AI;
 import Actor.Actor;
 import Actor.Brick;
-import Actor.CoinAndLifePack;
 import Actor.CoinPack;
 import Actor.Empty;
 import Actor.LifePack;
@@ -17,7 +16,6 @@ import Actor.Stone;
 import Actor.Water;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
-import javax.swing.text.PlainDocument;
 import tank.TankClient;
 
 /**
@@ -26,10 +24,25 @@ import tank.TankClient;
  */
 public class MapControl {
 
+    /**
+     * @return the players
+     */
+    public static ArrayList<Player> getPlayers() {
+        return players;
+    }
+
+    /**
+     * @param aPlayers the players to set
+     */
+    public static void setPlayers(ArrayList<Player> aPlayers) {
+        players = aPlayers;
+    }
+
     private Actor[][] map;
-    private ArrayList<Player> players;
-    Player client;
-    String playerName;
+    private static ArrayList<Player> players;
+    private Player[] pla = new Player[5];
+    private Player client;
+    private String playerName;
 
     //int clientId;
     public MapControl() {
@@ -40,6 +53,7 @@ public class MapControl {
                 map[i][j] = empty;
             }
         }
+
         players = new ArrayList<Player>();
     }
 
@@ -54,7 +68,7 @@ public class MapControl {
      * @param map the map to set
      */
     public void setMap(Actor[][] map) {
-        this.map = map;
+        this.setMap(map);
     }
 
     public void initializeMap(String s) {
@@ -64,12 +78,12 @@ public class MapControl {
 
 //        tokenize the string
         StringTokenizer tokenizer = new StringTokenizer(string, ":");
-        this.playerName = tokenizer.nextToken();
+        this.setPlayerName(tokenizer.nextToken());
         String bricks = tokenizer.nextToken();
         String stones = tokenizer.nextToken();
         String water = tokenizer.nextToken();
 
-        System.out.println("p: " + this.playerName + " bricks: " + bricks + " stones: " + stones + " water: " + water);
+        System.out.println("p: " + this.getPlayerName() + " bricks: " + bricks + " stones: " + stones + " water: " + water);
 
 //        tokenize string for bricks
         StringTokenizer brickTokenizer = new StringTokenizer(bricks, ";");
@@ -140,13 +154,13 @@ public class MapControl {
             player.setPoints(0);
             player.setHealth(100);
 
-            if (player.getName() == null ? this.playerName == null : player.getName().equals(this.playerName)) {
-                player.setType("P");
-                client = player;
+            if (player.getName() == null ? this.getPlayerName() == null : player.getName().equals(this.getPlayerName())) {
+                setClient(player);
             }
             char playerNum = player.getName().charAt(1);
             int index = Integer.parseInt(String.valueOf(playerNum));
-            players.add(index, player);
+            getPla()[index] = player;
+            getPlayers().add(index, player);
             getMap()[player.getY()][player.getX()] = player;
         }
     }
@@ -158,11 +172,10 @@ public class MapControl {
 
         int i = tokenizer.countTokens();
 
-        for (Player player : this.players) {
-            if(!player.isIsDeth()){
+        for (Player player : this.getPlayers()) {
+            if (!player.isIsDeth()) {
                 Empty empty = new Empty(player.getX(), player.getY());
                 getMap()[empty.getY()][empty.getX()] = empty;
-                System.out.println(player.getName()+"======X=="+player.getX()+"====Y====="+player.getX()+"==========================" +getMap()[empty.getY()][empty.getX()].getType());
             }
         }
 
@@ -189,18 +202,17 @@ public class MapControl {
 
             if (!this.players.get(index).isIsDeth()) {
                 if (player.getHealth() != 0) {
-                    if (player.getName() == null ? client.getName() == null : player.getName().equals(client.getName())) {
-                        player.setType("P");
-                        client = player;
+                    if (player.getName() == null ? getClient().getName() == null : player.getName().equals(getClient().getName())) {
+                        setClient(player);
                     }
                     getMap()[player.getY()][player.getX()] = player;
                 } else {
                     player.setIsDeth(true);
                     CoinPack coinPack = new CoinPack(points, Integer.MAX_VALUE, x, y);
-                    getMap()[x][y] = coinPack;
-                    System.out.println("=====play "+player.getName()+" was deth====");
+                    getMap()[y][x] = coinPack;
+                    System.out.println("=====play " + player.getName() + " was deth====");
                 }
-                this.players.set(index, player);
+                this.getPlayers().set(index, player);
             }
         }
 
@@ -226,8 +238,7 @@ public class MapControl {
         }
 
         AI ai = new AI();
-        client.setType("P");
-        String msg = ai.processInputMessege(getMap(), client);
+        String msg = ai.processInputMessege(getMap(), getClient());
         tankClient.run(msg);
     }
 
@@ -298,6 +309,48 @@ public class MapControl {
             }
         });
         t.start();
+    }
+
+    /**
+     * @return the pla
+     */
+    public Player[] getPla() {
+        return pla;
+    }
+
+    /**
+     * @param pla the pla to set
+     */
+    public void setPla(Player[] pla) {
+        this.pla = pla;
+    }
+
+    /**
+     * @return the client
+     */
+    public Player getClient() {
+        return client;
+    }
+
+    /**
+     * @param client the client to set
+     */
+    public void setClient(Player client) {
+        this.client = client;
+    }
+
+    /**
+     * @return the playerName
+     */
+    public String getPlayerName() {
+        return playerName;
+    }
+
+    /**
+     * @param playerName the playerName to set
+     */
+    public void setPlayerName(String playerName) {
+        this.playerName = playerName;
     }
 
 }

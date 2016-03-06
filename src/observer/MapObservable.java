@@ -6,6 +6,7 @@
 package observer;
 
 import Actor.Actor;
+import Actor.Player;
 import java.util.ArrayList;
 
 /**
@@ -20,9 +21,9 @@ public class MapObservable {
         observers.add(observer);
     }
 
-    public void update(Actor map[][]) {
+    public void update(Actor map[][], Player[] players) {
         for (MapObserver mapObserver : observers) {
-            mapObserver.updateInterface(map);
+            mapObserver.updateInterface(map, players);
         }
     }
 
